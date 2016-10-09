@@ -10,6 +10,7 @@ import android.os.BatteryManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,19 +53,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    public static boolean isNetworkAvaliable(Context ctx) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) ctx
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        if ((connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE) != null && connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED)
-                || (connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI) != null && connectivityManager
-                .getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .getState() == NetworkInfo.State.CONNECTED)) {
-            return true;
-        } else {
+    public static boolean isNetworkAvaliable(Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) { // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+            {
+                // connected to wifi
+                Toast.makeText(context, activeNetwork.getTypeName(), Toast.LENGTH_SHORT).show();
+            }
+            else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to the mobile provider's data plan
+                Toast.makeText(context, activeNetwork.getTypeName(), Toast.LENGTH_SHORT).show();
+            }
+        return true;
+        }
+        else
+        {
+            // not connected to the internet
             return false;
         }
     }
