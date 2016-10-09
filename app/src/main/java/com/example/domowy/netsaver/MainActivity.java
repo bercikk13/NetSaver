@@ -12,6 +12,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 public class MainActivity extends AppCompatActivity {
 
     PowerConnectionReceiver PowerStatusReceiver = new PowerConnectionReceiver();
@@ -48,6 +52,31 @@ public class MainActivity extends AppCompatActivity {
         };
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(batteryReceiver, filter);
+
+        Context context = getApplicationContext();
+        // checking if phone is chargnig if yes then
+        if(PowerStatusReceiver.equals(powerConnectedFilter))
+        {
+
+            //checking if phone have conection with network if yes then
+            if(isNetworkAvaliable(context))
+            {
+
+                Toast.makeText(context, "Do you want to close internet connection?", Toast.LENGTH_LONG).show();
+
+
+
+            }
+            else
+            {
+                Toast.makeText(context, "Send Sleep cuz net is not avaliable", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        else
+        {
+            Toast.makeText(context, "Send Sleep cuz itr isnt charging", Toast.LENGTH_LONG).show();
+        }
 
 
     }
@@ -87,6 +116,9 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
+
+
 
 
 }
