@@ -14,12 +14,24 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    PowerConnectionReceiver PowerStatusReceiver = new PowerConnectionReceiver();
 
 
     @Override
     public void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        /////
+
+
+        // register our power status receivers
+        IntentFilter powerConnectedFilter = new IntentFilter(Intent.ACTION_POWER_CONNECTED);
+        registerReceiver(PowerStatusReceiver, powerConnectedFilter);
+
+        IntentFilter powerDisconnectedFilter = new IntentFilter(Intent.ACTION_POWER_DISCONNECTED);
+        registerReceiver(PowerStatusReceiver, powerDisconnectedFilter);
+
+        /////
         BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
             int scale = -1;
             int level = -1;
@@ -75,4 +87,6 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
+
+
 }
