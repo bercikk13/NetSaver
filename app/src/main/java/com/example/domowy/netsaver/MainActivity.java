@@ -6,11 +6,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +39,25 @@ public class MainActivity extends AppCompatActivity {
             if(isNetworkAvaliable(context))
             {
                 Toast.makeText(context, "Do you want to close internet connection?", Toast.LENGTH_LONG).show();
+
+                WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                wifi.setWifiEnabled(false);
+               // Context context = getApplicationContext();
+                try {
+                    setMobileConnectionDisabled(context, false);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+
+
             }
             else
             {
@@ -42,10 +66,26 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
+
             Toast.makeText(context, "Send Sleep cuz itr isnt charging", Toast.LENGTH_LONG).show();
+           finish();
         }
 
     }
+
+    private void setMobileConnectionDisabled(Context context, boolean disabled) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
+        final ConnectivityManager mConnectivityManager = (ConnectivityManager)  context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final Class mClass = Class.forName(mConnectivityManager.getClass().getName());
+        final Field mField = mClass.getDeclaredField("mService");
+        mField.setAccessible(true);
+        final Object mObject = mField.get(mConnectivityManager);
+        final Class mConnectivityManagerClass =  Class.forName(mObject.getClass().getName());
+        final Method setMobileDataEnabledMethod = mConnectivityManagerClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);
+        setMobileDataEnabledMethod.setAccessible(false);
+
+        setMobileDataEnabledMethod.invoke(mObject, disabled);
+    }
+
    public static boolean isNetworkAvaliable(Context context)
     {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
